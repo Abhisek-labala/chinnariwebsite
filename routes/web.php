@@ -73,6 +73,10 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
     Route::get('settings/contact', [SettingController::class, 'contact'])->name('settings.contact');
     Route::post('settings/contact', [SettingController::class, 'updateContact'])->name('settings.updateContact');
+
+    Route::get('settings/theme', [SettingController::class, 'theme'])->name('settings.theme');
+    Route::post('settings/theme', [SettingController::class, 'updateTheme'])->name('settings.updateTheme');
+    Route::delete('settings/theme/logo', [SettingController::class, 'removeLogo'])->name('settings.removeLogo');
 });
 
 // Contact Form Submission (Public)

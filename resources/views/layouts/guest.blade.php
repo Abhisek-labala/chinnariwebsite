@@ -10,6 +10,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <style>
+        :root {
+            /* Dynamic Theme Colors */
+            --primary: {{ $themeSettings['theme_primary'] ?? '#007bff' }};
+            --secondary: {{ $themeSettings['theme_secondary'] ?? '#00d2d3' }};
+            --accent: {{ $themeSettings['theme_accent'] ?? '#ff9f43' }};
+        }
+        
+    </style>
     <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
@@ -18,11 +27,21 @@
     <nav class="navbar">
         <div class="container">
             <a href="{{ route('home') }}" class="logo">
-                <i class="fas fa-heartbeat"></i> Chinnari Medicos
+                @if(isset($themeSettings['site_logo']))
+                    <img src="{{ asset($themeSettings['site_logo']) }}" alt="Logo" style="height: {{ $themeSettings['site_logo_height'] ?? 40 }}px; vertical-align: middle;">
+                    @if(isset($themeSettings['show_site_name']) && $themeSettings['show_site_name'] == '1')
+                        <span style="color: {{ $themeSettings['site_name_color'] ?? '#333333' }}; margin-left: 8px; font-weight: 600;">{{ $themeSettings['site_name'] ?? 'Chinnari Medicos' }}</span>
+                    @endif
+                @else
+                    <i class="fas fa-heartbeat" style="color: var(--primary);"></i> 
+                    <span style="color: {{ $themeSettings['site_name_color'] ?? '#333333' }};">{{ $themeSettings['site_name'] ?? 'Chinnari Medicos' }}</span>
+                @endif
             </a>
+            
             <div class="menu-toggle" id="mobile-menu">
                 <i class="fas fa-bars"></i>
             </div>
+
             <div class="nav-links" id="nav-links">
                 <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
                 <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About</a>
@@ -46,9 +65,10 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-col">
-                    <h3>Chinnari Medicos</h3>
+                    <h3>{{ $themeSettings['site_name'] ?? 'Chinnari Medicos' }}</h3>
                     <p>Providing advanced healthcare and pharmacy services with a focus on patient care.</p>
                 </div>
+                <!-- ... (rest of footer unchanged) ... -->
                 <div class="footer-col">
                     <h3>Quick Links</h3>
                     <ul>
@@ -66,7 +86,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; {{ date('Y') }} Chinnari Medicos Clinic & Pharmacy. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} {{ $themeSettings['site_name'] ?? 'Chinnari Medicos' }}. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -76,12 +96,12 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Menu
             const menuToggle = document.getElementById('mobile-menu');
             const navLinks = document.getElementById('nav-links');
 
             menuToggle.addEventListener('click', () => {
                 navLinks.classList.toggle('active');
-                // Change icon
                 const icon = menuToggle.querySelector('i');
                 if (navLinks.classList.contains('active')) {
                     icon.classList.remove('fa-bars');
@@ -91,6 +111,8 @@
                     icon.classList.add('fa-bars');
                 }
             });
+
+
         });
     </script>
     @stack('scripts')

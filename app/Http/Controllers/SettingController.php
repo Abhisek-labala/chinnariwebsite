@@ -67,4 +67,47 @@ class SettingController extends Controller
 
         return redirect()->route('admin.settings.contact')->with('success', 'Contact details updated successfully.');
     }
+    public function theme()
+    {
+        $settings = Setting::whereIn('key', ['site_name', 'site_logo', 'theme_primary', 'theme_secondary', 'theme_accent', 'site_name_color', 'show_site_name', 'site_logo_height'])->pluck('value', 'key');
+        return view('admin.settings.theme', compact('settings'));
+    }
+
+    public function updateTheme(Request $request)
+    {
+        $request->validate([
+            'site_name' => 'required|string|max:255',
+            'theme_primary' => 'required|string',
+            'theme_secondary' => 'required|string',
+            'theme_accent' => 'required|string',
+            'site_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'site_name_color' => 'nullable|string',
+            'show_site_name' => 'nullable|string',
+            'site_logo_height' => 'nullable|integer|min:20|max:150',
+        ]);
+
+        Setting::updateOrCreate(['key' => 'site_name'], ['value' => $request->site_name]);
+        Setting::updateOrCreate(['key' => 'theme_primary'], ['value' => $request->theme_primary]);
+        Setting::updateOrCreate(['key' => 'theme_secondary'], ['value' => $request->theme_secondary]);
+        Setting::updateOrCreate(['key' => 'theme_accent'], ['value' => $request->theme_accent]);
+        Setting::updateOrCreate(['key' => 'site_name_color'], ['value' => $request->site_name_color ?? '#333333']);
+        Setting::updateOrCreate(['key' => 'show_site_name'], ['value' => $request->has('show_site_name') ? '1' : '0']);
+        Setting::updateOrCreate(['key' => 'site_logo_height'], ['value' => $request->site_logo_height ?? '40']);
+
+        if ($request->hasFile('site_logo')) {
+            $imageName = 'logo-' . time() . '.' . $request->site_logo->extension();
+            $request->site_logo->move(public_path('images'), $imageName);
+            $imagePath = 'images/' . $imageName;
+
+            Setting::updateOrCreate(['key' => 'site_logo'], ['value' => $imagePath]);
+        }
+
+        return redirect()->route('admin.settings.theme')->with('success', 'Theme settings updated successfully.');
+    }
+
+    public function removeLogo()
+    {
+        Setting::where('key', 'site_logo')->delete();
+        return redirect()->route('admin.settings.theme')->with('success', 'Logo removed successfully. Site name will be used.');
+    }
 }

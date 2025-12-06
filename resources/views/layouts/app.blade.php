@@ -140,6 +140,9 @@
             <a href="{{ route('admin.settings.contact') }}" class="{{ request()->routeIs('admin.settings.contact') ? 'active' : '' }}">
                 <i class="fas fa-address-book"></i> Settings (Contact)
             </a>
+            <a href="{{ route('admin.settings.theme') }}" class="{{ request()->routeIs('admin.settings.theme') ? 'active' : '' }}">
+                <i class="fas fa-paint-brush"></i> Settings (Theme)
+            </a>
         </div>
 
         <!-- Content -->
